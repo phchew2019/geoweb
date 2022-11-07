@@ -8,6 +8,8 @@
         <meta name="apple-mobile-web-app-capable" content="yes">
         <link rel="stylesheet" href="css/leaflet.css">
         <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
         <style>
         #map {
             width: 1559px;
@@ -28,16 +30,45 @@
         <script src="js/rbush.min.js"></script>
         <script src="js/labelgun.min.js"></script>
         <script src="js/labels.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet-search.js"></script>
         <script src="data/punggolMP19_SZ_punggol_1.js"></script>
         <script src="data/punggolbuildings_2.js"></script>
         <script src="data/punggolschools_3.js"></script>
         <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+        }
         var map = L.map('map', {
             zoomControl:true, maxZoom:18, minZoom:14
         })
         var hash = new L.Hash(map);
         map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
         var bounds_group = new L.featureGroup([]);
         function setBounds() {
             if (bounds_group.getLayers().length) {
@@ -58,6 +89,14 @@
         layer_OpenStreetMap_0;
         map.addLayer(layer_OpenStreetMap_0);
         function pop_punggolMP19_SZ_punggol_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
             var popupContent = '<table>\
                     <tr>\
                         <td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(feature.properties['fid'].toLocaleString()) : '') + '</td>\
@@ -162,6 +201,14 @@
         bounds_group.addLayer(layer_punggolMP19_SZ_punggol_1);
         map.addLayer(layer_punggolMP19_SZ_punggol_1);
         function pop_punggolbuildings_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
             var popupContent = '<table>\
                     <tr>\
                         <td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(feature.properties['fid'].toLocaleString()) : '') + '</td>\
@@ -459,6 +506,14 @@
         bounds_group.addLayer(layer_punggolbuildings_2);
         map.addLayer(layer_punggolbuildings_2);
         function pop_punggolschools_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
             var popupContent = '<table>\
                     <tr>\
                         <td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(feature.properties['fid'].toLocaleString()) : '') + '</td>\
@@ -594,6 +649,13 @@
         var baseMaps = {};
         L.control.layers(baseMaps,{'punggol — schools<br /><table><tr><td style="text-align: center;"><img src="legend/punggolschools_3_PRIMARY0.png" /></td><td>PRIMARY</td></tr><tr><td style="text-align: center;"><img src="legend/punggolschools_3_SECONDARY1.png" /></td><td>SECONDARY</td></tr></table>': layer_punggolschools_3,'punggol — buildings<br /><table><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_civic0.png" /></td><td>civic</td></tr><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_commercial1.png" /></td><td>commercial</td></tr><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_construction2.png" /></td><td>construction</td></tr><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_house3.png" /></td><td>house</td></tr><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_mixused4.png" /></td><td>mix_used</td></tr><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_parking5.png" /></td><td>parking</td></tr><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_public6.png" /></td><td>public</td></tr><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_religious7.png" /></td><td>religious</td></tr><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_residential8.png" /></td><td>residential</td></tr><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_retail9.png" /></td><td>retail</td></tr><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_roof10.png" /></td><td>roof</td></tr><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_school11.png" /></td><td>school</td></tr><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_temple12.png" /></td><td>temple</td></tr><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_toilets13.png" /></td><td>toilets</td></tr><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_trainstation14.png" /></td><td>train_station</td></tr><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_transportation15.png" /></td><td>transportation</td></tr><tr><td style="text-align: center;"><img src="legend/punggolbuildings_2_16.png" /></td><td></td></tr></table>': layer_punggolbuildings_2,'<img src="legend/punggolMP19_SZ_punggol_1.png" /> punggol — MP19_SZ_punggol': layer_punggolMP19_SZ_punggol_1,"OpenStreetMap": layer_OpenStreetMap_0,}).addTo(map);
         setBounds();
+        map.addControl(new L.Control.Search({
+            layer: layer_punggolschools_3,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'school_name'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
         </script>
     </body>
 </html>
